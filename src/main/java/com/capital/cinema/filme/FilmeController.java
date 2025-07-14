@@ -91,6 +91,7 @@ public class FilmeController {
             }
         } while (opcao != 1);
     }
+
     public void excluir() {
         System.out.println("\n++++++ Excluir um Filme ++++++");
         Filme filme;
@@ -101,7 +102,7 @@ public class FilmeController {
             input.nextLine();
             if (codigo == 0) {
                 opcao = 0;
-            } else if(codigo > 0){
+            } else if (codigo > 0) {
                 filme = repository.getFilmeById(codigo);
                 if (filme == null) {
                     System.out.println("Código inválido.");
@@ -122,11 +123,12 @@ public class FilmeController {
             }
         } while (opcao != 0);
     }
-     private void selectTodos() {
+
+    private void selectTodos() {
         System.out.println("\nLista de Filmes cadastrados no banco de dados:\n" + repository.findAll());
     }
 
-    private void selectFilmeById() {
+    public void selectFilmeById() {
         System.out.print("\nDigite o código do Filme: ");
         Filme filme = repository.getFilmeById(input.nextLong());
         input.nextLine();
@@ -139,13 +141,19 @@ public class FilmeController {
 
     public void selectFilmeByNome() {
         System.out.print("Digite o nome do Filme: ");
-        String nome = input.next();
+        input.nextLine(); // limpa buffer se necessário
+        String nome = input.nextLine();
         System.out.println("Chave de pesquisa: " + nome);
+
         List<Filme> filmes = repository.getFilmesByTitulo("%" + nome + "%");
+
         if (filmes.isEmpty()) {
             System.out.println("Não há registros correspondentes para: " + nome);
         } else {
-            System.out.println(filmes);
+            System.out.println("Filmes encontrados:");
+            for (Filme f : filmes) {
+                System.out.println(f);
+            }
         }
     }
 }
