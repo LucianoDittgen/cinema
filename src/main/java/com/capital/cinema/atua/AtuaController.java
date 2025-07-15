@@ -1,5 +1,7 @@
 package com.capital.cinema.atua;
 
+import com.capital.cinema.filme.Filme;
+import com.capital.cinema.filme.FilmeRepository;
 import org.springframework.stereotype.Controller;
 
 import java.util.Scanner;
@@ -7,11 +9,13 @@ import java.util.Scanner;
 @Controller
 public class AtuaController {
 
-    private final AtuaRepository repository;
+    private final AtuaRepository atuaRepository;
+    private final FilmeRepository filmeRepository;
     private final Scanner input = new Scanner(System.in);
 
-    public AtuaController(AtuaRepository repository) {
-        this.repository = repository;
+    public AtuaController(AtuaRepository atuaRepository, FilmeRepository filmeRepository) {
+        this.atuaRepository = atuaRepository;
+        this.filmeRepository = filmeRepository;
     }
 
     public void menu() {
@@ -40,11 +44,30 @@ public class AtuaController {
     public void inserir() {
         Atua atua = new Atua();
         System.out.println("\n++++++ Cadastro de nova Atuação ++++++");
+
         System.out.print("Digite o papel do ator: ");
         atua.setPapel(input.nextLine());
 
+        // Listar filmes existentes
+        System.out.println("\nFilmes disponíveis:");
+        filmeRepository.findAll().forEach(f ->
+                System.out.println("ID: " + f.getId() + " | Título: " + f.getTitulo())
+        );
 
-        System.out.println("Atuação salva com sucesso:\n" + repository.save(atua));
+        // Selecionar filme
+        System.out.print("Digite o ID do filme: ");
+        Long filmeId = input.nextLong();
+        input.nextLine();
+
+        Filme filme = filmeRepository.findById(filmeId).orElse(null);
+        if (filme == null) {
+            System.out.println("Filme não encontrado.");
+            return;
+        }
+
+        atua.setFilme(filme);
+
+        System.out.println("Atuação salva com sucesso:\n" + atuaRepository.save(atua));
     }
 
     public void atualizar() {
@@ -53,7 +76,7 @@ public class AtuaController {
         Long id = input.nextLong();
         input.nextLine();
 
-        Atua atua = repository.findById(id).orElse(null);
+        Atua atua = atuaRepository.findById(id).orElse(null);
         if (atua == null) {
             System.out.println("Atuação não encontrada.");
             return;
@@ -67,12 +90,31 @@ public class AtuaController {
             atua.setPapel(input.nextLine());
         }
 
+        // Atualizar o filme associado (opcional)
+        System.out.println("Filme atual: " + atua.getFilme().getTitulo());
+        System.out.print("Deseja trocar o filme? (0-sim / outro-não): ");
+        if (input.nextInt() == 0) {
+            input.nextLine();
+            System.out.println("Filmes disponíveis:");
+            filmeRepository.findAll().forEach(f ->
+                    System.out.println("ID: " + f.getId() + " | Título: " + f.getTitulo())
+            );
+            System.out.print("Digite o ID do novo filme: ");
+            Long filmeId = input.nextLong();
+            input.nextLine();
+            Filme novoFilme = filmeRepository.findById(filmeId).orElse(null);
+            if (novoFilme != null) {
+                atua.setFilme(novoFilme);
+            } else {
+                System.out.println("Filme não encontrado. Mantido o anterior.");
+            }
+        }
 
-        System.out.println("Atuação atualizada com sucesso:\n" + repository.save(atua));
+        System.out.println("Atuação atualizada com sucesso:\n" + atuaRepository.save(atua));
     }
 
     public void listar() {
         System.out.println("\n++++++ Lista de Atuações ++++++");
-        repository.findAll().forEach(System.out::println);
+        atuaRepository.findAll().forEach(System.out::println);
     }
 }
