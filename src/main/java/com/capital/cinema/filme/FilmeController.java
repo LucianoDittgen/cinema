@@ -141,11 +141,10 @@ public class FilmeController {
 
     public void selectFilmeByNome() {
         System.out.print("Digite o nome do Filme: ");
-        input.nextLine(); // limpa buffer se necessário
         String nome = input.nextLine();
         System.out.println("Chave de pesquisa: " + nome);
 
-        List<Filme> filmes = repository.getFilmesByTitulo("%" + nome + "%");
+        List<Filme> filmes = repository.getFilmesByTitulo(nome);
 
         if (filmes.isEmpty()) {
             System.out.println("Não há registros correspondentes para: " + nome);

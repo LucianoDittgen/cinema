@@ -90,7 +90,6 @@ public class AtuaController {
             atua.setPapel(input.nextLine());
         }
 
-        // Atualizar o filme associado (opcional)
         System.out.println("Filme atual: " + atua.getFilme().getTitulo());
         System.out.print("Deseja trocar o filme? (0-sim / outro-não): ");
         if (input.nextInt() == 0) {
